@@ -2,6 +2,7 @@ package dlna
 
 import (
 	"strings"
+	"time"
 
 	"github.com/oxzjh/ssdp"
 )
@@ -106,4 +107,18 @@ func New(device *ssdp.Device) *DLNA {
 		}
 	}
 	return d
+}
+
+func FindDevices(timeout time.Duration) ([]*ssdp.Device, error) {
+	targets, err := ssdp.Search(timeout, ssdp.SearchTargetAVTransport)
+	if err != nil {
+		return nil, err
+	}
+	devices := make([]*ssdp.Device, 0, len(targets))
+	for _, t := range targets {
+		if d, err := ssdp.NewDevice(t.Location); err == nil {
+			devices = append(devices, d)
+		}
+	}
+	return devices, nil
 }
