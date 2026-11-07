@@ -26,6 +26,11 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	if len(devices) == 0 {
+		fmt.Println("未发现设备")
+		return
+	}
+
 	var selectedDevice *ssdp.Device
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("请选择设备：")
@@ -65,7 +70,10 @@ func main() {
 		os.Exit(1)
 	}
 	d := dlna.New(selectedDevice)
-	if err = d.SetAVTransportURI(server.GetURL()); err != nil {
+	if err = d.SetAVTransportURI(server.GetURL()); err == nil {
+		err = d.Play("1")
+	}
+	if err != nil {
 		server.Close()
 		fmt.Println(err)
 		os.Exit(1)
